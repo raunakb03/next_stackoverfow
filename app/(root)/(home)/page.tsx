@@ -1,12 +1,12 @@
-import React from 'react'
+import React from "react";
 import { UserButton } from "@clerk/nextjs";
 
 const Home = () => {
   return (
     <div>
-      <UserButton afterSignOutUrl="/"/>
+      <UserButton afterSignOutUrl="/" />
     </div>
-  )
-}
+  );
+};
 
 export default Home;
