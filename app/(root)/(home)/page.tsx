@@ -1,4 +1,5 @@
 import Filter from "@/components/Filter";
+import HomeFilters from "@/components/home/HomeFilters";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
@@ -22,11 +23,16 @@ const Home = () => {
           placeholder='Search for questions'
           otherClasses='flex-1'
         />
-        <Filter 
+        {/* <Filter 
           filters={HomePageFilters}
           otherClasses='min-h-[56px] sm:min-w-[170px]'
           containerClasses='hidden max-md:flex'
+        /> */}
+        <Filter 
+          filters={HomePageFilters}
+          otherClasses='min-h-[56px] sm:min-w-[170px]'
         />
+        {/* <HomeFilters /> */}
       </div>
     </>
   );
