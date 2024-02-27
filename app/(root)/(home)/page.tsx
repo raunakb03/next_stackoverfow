@@ -1,3 +1,4 @@
+import QuestionCard from "@/components/Cards/QuestionCard";
 import Filter from "@/components/Filter";
 import NoResult from "@/components/NoResult";
 import HomeFilters from "@/components/home/HomeFilters";
@@ -7,28 +8,148 @@ import { HomePageFilters } from "@/constants/filters";
 import Link from "next/link";
 import React from "react";
 
-const questions= [
+const questions = [
   {
-    _id: 1,
-    title: "How to use React Router with the latest version of react?",
-    tags: [{_id: 1, name: 'react'}, {_id: 2, name: 'javascript'}],
-    author: 'John Doe',
-    upvotes: 10,
-    views: 20,
-    answers: 5,
-    createdAt: '2021-09-01T00:00:00.000Z'
+    _id: "1",
+    title: "How to learn TypeScript effectively?",
+    tags: [{ _id: "tag1", name: "TypeScript" }, { _id: "tag2", name: "Programming" }],
+    author: {
+      _id: "author1",
+      name: "John Doe",
+      picture: "/path/to/picture1.jpg",
+    },
+    upvotes: 25,
+    views: 500000,
+    answers: [],
+    createdAt: new Date("2023-01-15"),
   },
   {
-    _id: 1,
-    title: "How to use React Router with the latest version of react?",
-    tags: [{_id: 1, name: 'react'}, {_id: 2, name: 'javascript'}],
-    author: 'John Doe',
-    upvotes: 10,
-    views: 20,
-    answers: 5,
-    createdAt: '2021-09-01T00:00:00.000Z'
+    _id: "2",
+    title: "Best practices for React performance optimization?",
+    tags: [{ _id: "tag3", name: "React" }, { _id: "tag4", name: "Performance" }],
+    author: {
+      _id: "author2",
+      name: "Jane Smith",
+      picture: "/path/to/picture2.jpg",
+    },
+    upvotes: 30,
+    views: 200,
+    answers: [],
+    createdAt: new Date("2023-02-20"),
   },
-]
+  {
+    _id: "3",
+    title: "How to deploy a Node.js application to AWS?",
+    tags: [{ _id: "tag5", name: "Node.js" }, { _id: "tag6", name: "AWS" }],
+    author: {
+      _id: "author3",
+      name: "Alice Johnson",
+      picture: "/path/to/picture3.jpg",
+    },
+    upvotes: 18,
+    views: 120,
+    answers: [],
+    createdAt: new Date("2023-03-10"),
+  },
+  {
+    _id: "4",
+    title: "Understanding asynchronous programming in JavaScript",
+    tags: [{ _id: "tag7", name: "JavaScript" }, { _id: "tag8", name: "Asynchronous" }],
+    author: {
+      _id: "author4",
+      name: "Bob Williams",
+      picture: "/path/to/picture4.jpg",
+    },
+    upvotes: 40,
+    views: 250,
+    answers: [],
+    createdAt: new Date("2023-04-05"),
+  },
+  {
+    _id: "5",
+    title: "How to design a RESTful API?",
+    tags: [{ _id: "tag9", name: "API" }, { _id: "tag10", name: "Design" }],
+    author: {
+      _id: "author5",
+      name: "Eva Brown",
+      picture: "/path/to/picture5.jpg",
+    },
+    upvotes: 35,
+    views: 180,
+    answers: [],
+    createdAt: new Date("2023-05-12"),
+  },
+  {
+    _id: "6",
+    title: "Introduction to machine learning algorithms",
+    tags: [{ _id: "tag11", name: "Machine Learning" }, { _id: "tag12", name: "Algorithms" }],
+    author: {
+      _id: "author6",
+      name: "Michael Garcia",
+      picture: "/path/to/picture6.jpg",
+    },
+    upvotes: 22,
+    views: 160,
+    answers: [],
+    createdAt: new Date("2023-06-20"),
+  },
+  {
+    _id: "7",
+    title: "CSS grid layout tutorial for beginners",
+    tags: [{ _id: "tag13", name: "CSS" }, { _id: "tag14", name: "Layout" }],
+    author: {
+      _id: "author7",
+      name: "Olivia Martinez",
+      picture: "/path/to/picture7.jpg",
+    },
+    upvotes: 28,
+    views: 190,
+    answers: [],
+    createdAt: new Date("2023-07-08"),
+  },
+  {
+    _id: "8",
+    title: "Using Git effectively in a team environment",
+    tags: [{ _id: "tag15", name: "Git" }, { _id: "tag16", name: "Version Control" }],
+    author: {
+      _id: "author8",
+      name: "David Wilson",
+      picture: "/path/to/picture8.jpg",
+    },
+    upvotes: 33,
+    views: 220,
+    answers: [],
+    createdAt: new Date("2023-08-15"),
+  },
+  {
+    _id: "9",
+    title: "How to implement authentication in a Node.js app?",
+    tags: [{ _id: "tag17", name: "Node.js" }, { _id: "tag18", name: "Authentication" }],
+    author: {
+      _id: "author9",
+      name: "Sophia Taylor",
+      picture: "/path/to/picture9.jpg",
+    },
+    upvotes: 26,
+    views: 170,
+    answers: [],
+    createdAt: new Date("2023-09-30"),
+  },
+  {
+    _id: "10",
+    title: "Understanding the basics of Docker containers",
+    tags: [{ _id: "tag19", name: "Docker" }, { _id: "tag20", name: "Containers" }],
+    author: {
+      _id: "author10",
+      name: "William Lee",
+      picture: "/path/to/picture10.jpg",
+    },
+    upvotes: 38,
+    views: 240,
+    answers: [],
+    createdAt: new Date("2023-10-25"),
+  },
+];
 
 const Home = () => {
   return (
@@ -58,7 +179,17 @@ const Home = () => {
         {
           questions.length > 0 ?
           questions.map((question, index)=> (
-            'Qustion card'
+            <QuestionCard
+              key={index}
+              _id= {question._id}
+              title= {question.title}
+              tags= {question.tags}
+              author= {question.author}
+              upvotes= {question.upvotes}
+              views= {question.views}
+              answers= {question.answers}
+              createdAt= {question.createdAt}
+            />
           )) : 
           <NoResult
             title= "There's no question to show"

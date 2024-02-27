@@ -3,7 +3,7 @@ import React from "react";
 import { Badge } from "./ui/badge";
 
 interface RenderTagsProps {
-  _id: number;
+  _id: number | string;
   name: string;
   totalQuestions?: number;
   showCount?: boolean;
