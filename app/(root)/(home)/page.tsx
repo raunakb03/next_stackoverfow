@@ -156,7 +156,7 @@ const Home = () => {
     <>
       <div className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="h1-bold text-dark100_light900">All Questions</h1>
-        <Link href='/ask-questions' className="flex justify-end max-sm:wfull">
+        <Link href='/ask-question' className="flex justify-end max-sm:wfull">
           <Button className="primary-gradient min-h-[46px] px-4 py-3 !text-light-900">Ask a Question</Button>
         </Link>
       </div>
@@ -194,7 +194,7 @@ const Home = () => {
           <NoResult
             title= "There's no question to show"
             description= "Be the first to beark the silence! Ask a question and kickstart the discussion. Our query coudl be the next big thing others learn from. Get involved!"
-            link= '/ask-questions'
+            link= '/ask-question'
             linkText= 'Ask a Question'
           />
         }
