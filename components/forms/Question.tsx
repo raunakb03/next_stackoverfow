@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,8 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Editor } from "@tinymce/tinymce-react";
 
 const Question = () => {
+  const editorRef = useRef(null);
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
@@ -63,13 +65,35 @@ const Question = () => {
           render={({ field }) => (
             <FormItem className="flex w-full flex-col gap-3">
               <FormLabel className="paragraph-semibold text-dark400_light800">
-                Detailed explanation of your problem<span className="text-primary-500">*</span>
+                Detailed explanation of your problem
+                <span className="text-primary-500">*</span>
               </FormLabel>
               <FormControl className="mt-3.5">
-                {/* add an editor component */}
+                <Editor
+                  apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_API_KEY}
+                // @ts-ignore
+                  onInit={(evt, editor) => (editorRef.current = editor)}
+                  initialValue=""
+                  init={{
+                    height: 350,
+                    menubar: false,
+                    plugins: [
+                      "advlist", "autolink", "lists", "link", "image", "charmap", "preview", "anchor",
+                      "searchreplace", "visualblocks", "fullscreen", "codesample",
+                      "insertdatetime", "media", "table"
+                    ],
+                    toolbar:
+                      "undo redo | " +
+                      "codesample | bold italic forecolor | alignleft aligncenter | " +
+                      "alignright alignjustify | bullist numlist", 
+                    content_style:
+                      "body { font-family:Inter; font-size:16px }",
+                  }}
+                />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Introduce the problem and expand on what opu put in the title. Minimum 20 characters.
+                Introduce the problem and expand on what opu put in the title.
+                Minimum 20 characters.
               </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
@@ -91,7 +115,8 @@ const Question = () => {
                 />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Add upto 5 tags to describe what your question is about. You need to press enter to press a tag.
+                Add upto 5 tags to describe what your question is about. You
+                need to press enter to press a tag.
               </FormDescription>
               <FormMessage className="text-red-500" />
             </FormItem>
