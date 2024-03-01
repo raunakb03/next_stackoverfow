@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Editor } from "@tinymce/tinymce-react";
 import { Badge } from "../ui/badge";
 import Image from "next/image";
+import { createQuestion } from "@/lib/actions/question.action";
 
 const type: any = "create";
 const Question = () => {
@@ -32,9 +33,15 @@ const Question = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof QuestionsSchema>) => {
+  const onSubmit = async (values: z.infer<typeof QuestionsSchema>) => {
     setIsSubmitting(true);
-    console.log(values);
+    try {
+      await createQuestion({});
+    } catch (error) {
+      
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputKeyDown = (
