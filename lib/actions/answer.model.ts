@@ -1,8 +1,8 @@
 "use server";
 
-import Answer from "@/models/answer.model";
+import { Answer } from "@/models/answer.model";
 import { connectToDatabase } from "../mongoose";
-import { CreateAnswerParams, GetAnswersParams } from "./shared.types";
+import { AnswerVoteParams, CreateAnswerParams, GetAnswersParams } from "./shared.types";
 import { Question } from "@/models/question.model";
 import { revalidatePath } from "next/cache";
 
@@ -39,5 +39,61 @@ export async function getAnswers(params: GetAnswersParams) {
     return { answers };
   } catch (error: any) {
     console.log("ERROR FROM GET ANSWER: ", error);
+  }
+}
+
+export async function upvoteAnswer(params: AnswerVoteParams) {
+  try {
+    connectToDatabase();
+    const { answerId, hasdownVoted, hasupVoted, path, userId } = params;
+
+    let updateQuery = {};
+    if (hasupVoted) {
+      updateQuery = { $pull: { upvotes: userId } };
+    } else if (hasdownVoted) {
+      updateQuery = {
+        $pull: { downvotes: userId },
+        $push: { upvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { upvotes: userId } };
+    }
+
+    console.log(updateQuery)
+
+    const answer= await Answer.findByIdAndUpdate(answerId, updateQuery, {
+      new: true,
+    });
+
+    revalidatePath(path);
+  } catch (error: any) {
+    console.log("ERROR FROM UPVOTE ANSWER ", error);
+  }
+}
+
+export async function downvoteAnswer(params: AnswerVoteParams) {
+  try {
+    connectToDatabase();
+    const { answerId, hasdownVoted, hasupVoted, path, userId } = params;
+
+    let updateQuery = {};
+    if (hasdownVoted) {
+      updateQuery = { $pull: { downvotes: userId } };
+    } else if (hasupVoted) {
+      updateQuery = {
+        $pull: { upvotes: userId },
+        $push: { downvotes: userId },
+      };
+    } else {
+      updateQuery = { $addToSet: { downvotes: userId } };
+    }
+
+    const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, {
+      new: true,
+    });
+
+    revalidatePath(path);
+  } catch (error: any) {
+    console.log("ERROR FROM DOWNVOTE ANSWER", error);
   }
 }

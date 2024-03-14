@@ -1,5 +1,6 @@
 "use client";
 
+import { downvoteAnswer, upvoteAnswer } from "@/lib/actions/answer.model";
 import {
   downvoteQuestion,
   upvoteQuestion,
@@ -48,13 +49,13 @@ const Votes = ({
           path: pathname,
         });
       } else if (type == "answer") {
-        // await upvoteAnswer({
-        //   answerId: JSON.parse(itemId),
-        //   userId: JSON.parse(userId),
-        //   hasdownVoted,
-        //   hasupVoted,
-        //   path: pathname,
-        // });
+        await upvoteAnswer({
+          answerId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathname,
+        });
       }
     }
     if (action == "downvote") {
@@ -67,13 +68,13 @@ const Votes = ({
           path: pathname,
         });
       } else if (type == "answer") {
-        // await downvoteAnswer({
-        //   answerId: JSON.parse(itemId),
-        //   userId: JSON.parse(userId),
-        //   hasdownVoted,
-        //   hasupVoted,
-        //   path: pathname,
-        // });
+        await downvoteAnswer({
+          answerId: JSON.parse(itemId),
+          userId: JSON.parse(userId),
+          hasdownVoted,
+          hasupVoted,
+          path: pathname,
+        });
       }
     }
   };
@@ -119,18 +120,20 @@ const Votes = ({
           </div>
         </div>
       </div>
-      <Image
-        src={
-          hasSaved
-            ? "/assets/icons/star-filled.svg"
-            : "/assets/icons/star-red.svg"
-        }
-        width={18}
-        height={18}
-        alt="downvote"
-        className="cursor-pointer"
-        onClick={() => handleSave()}
-      />
+      {type == "question" && (
+        <Image
+          src={
+            hasSaved
+              ? "/assets/icons/star-filled.svg"
+              : "/assets/icons/star-red.svg"
+          }
+          width={18}
+          height={18}
+          alt="downvote"
+          className="cursor-pointer"
+          onClick={() => handleSave()}
+        />
+      )}
     </div>
   );
 };
