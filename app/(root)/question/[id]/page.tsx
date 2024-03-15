@@ -16,7 +16,7 @@ const Page = async ({ params, searchParamas }: any) => {
   const result = await getQuestionById({ questionId: params.id });
   const { userId: clerkId } = auth();
 
-  let mongoUser;
+  let mongoUser= null;
   if (clerkId) {
     mongoUser = await getUserById({ userId: clerkId });
   }
@@ -95,13 +95,13 @@ const Page = async ({ params, searchParamas }: any) => {
 
       <AllAnswers
         questionId={result._id}
-        userId={mongoUser._id}
+        userId={mongoUser?._id}
         totalAnswers={result.answers.length}
       />
       <Answer
         question={result.content}
         questionId={JSON.stringify(result._id)}
-        authorId={JSON.stringify(mongoUser._id)}
+        authorId={JSON.stringify(mongoUser?._id)}
       />
     </>
   );
