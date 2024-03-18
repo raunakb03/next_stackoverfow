@@ -1,22 +1,29 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { formatDistanceToNow } from "date-fns"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { formatDistanceToNow } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export const getTimeStamp = (createdAt: Date):string => {
-  const timeAgo= formatDistanceToNow(new Date(createdAt), { addSuffix: true })
+export const getTimeStamp = (createdAt: Date): string => {
+  const timeAgo = formatDistanceToNow(new Date(createdAt), { addSuffix: true });
   return timeAgo;
-}
+};
 
-export const formatNumber = (num: number):string => {
-  if(num >= 1000000){
-    return (num/1000000).toFixed(1) + 'M'
-  } else if (num >= 1000){
-    return (num/1000).toFixed(1) + 'K'
+export const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
   } else {
-    return num.toString()
+    return num.toString();
   }
-}
+};
+
+export const getJoinedDate = (date: Date) => {
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  return `${month} ${year}`;
+};
