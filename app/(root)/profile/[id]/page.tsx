@@ -1,4 +1,6 @@
 import ProfileLink from "@/components/ProfileLink";
+import QuestionTab from "@/components/QuestionTab";
+import Stats from "@/components/Stats";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getUserInfo } from "@/lib/actions/user.action";
@@ -68,15 +70,18 @@ const Page = async ({ params, searchParams }: any) => {
           </SignedIn>
         </div>
       </div>
-      stats
+      <Stats
+        totalQuestions={userInfo?.totalQuestions || 0}
+        totalAnswers={userInfo?.totalAnswers || 0}
+      />
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">
           <TabsList className="background-light800_dark400 min-h-[42px] px-1">
             <TabsTrigger value="top-posts" className="tab">
-              Top Posts
+              <QuestionTab />
             </TabsTrigger>
             <TabsTrigger value="answers" className="tab">
-              Answers
+              Answers tab
             </TabsTrigger>
           </TabsList>
           <TabsContent value="top-post">posts</TabsContent>
