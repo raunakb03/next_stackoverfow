@@ -1,3 +1,4 @@
+import AnswersTab from "@/components/AnswersTab";
 import ProfileLink from "@/components/ProfileLink";
 import QuestionTab from "@/components/QuestionTab";
 import Stats from "@/components/Stats";
@@ -11,8 +12,8 @@ import Link from "next/link";
 import React from "react";
 
 const Page = async ({ params, searchParams }: any) => {
-  const userInfo = await getUserInfo({ userId: params.id });
   const { userId: clerkId } = auth();
+  const userInfo = await getUserInfo({ userId: params.id });
 
   return (
     <>
@@ -78,14 +79,26 @@ const Page = async ({ params, searchParams }: any) => {
         <Tabs defaultValue="top-posts" className="flex-1">
           <TabsList className="background-light800_dark400 min-h-[42px] px-1">
             <TabsTrigger value="top-posts" className="tab">
-              <QuestionTab />
+              Top Posts
             </TabsTrigger>
             <TabsTrigger value="answers" className="tab">
-              Answers tab
+              Answers
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="top-post">posts</TabsContent>
-          <TabsContent value="answers">answers</TabsContent>
+          <TabsContent value="top-posts">
+            <QuestionTab
+              searchParams={searchParams}
+              userId={userInfo?.user._id}
+              clerkId={clerkId}
+            />
+          </TabsContent>
+          <TabsContent value="answers" className="flex w-full flex-col gap-6">
+            <AnswersTab
+              searchParams={searchParams}
+              userId={userInfo?.user._id}
+              clerkId={clerkId}
+            />
+          </TabsContent>
         </Tabs>
       </div>
     </>
