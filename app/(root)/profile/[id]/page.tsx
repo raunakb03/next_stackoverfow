@@ -40,7 +40,7 @@ const Page = async ({ params, searchParams }: any) => {
                   title={userInfo?.user.location}
                 />
               )}
-              {userInfo?.user.portflioportfolioWebsite && (
+              {userInfo?.user.portfolioWebsite && (
                 <ProfileLink
                   imgUrl={`/assets/icons/link.svg`}
                   title="Portfolio"
