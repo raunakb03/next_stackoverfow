@@ -19,6 +19,7 @@ const QuestionTab = async ({
     <div className="flex flex-col gap-5">
       {result?.questions.map((question) => (
         <QuestionCard
+          clerkId={clerkId}
           key={question._id}
           _id={question._id}
           title={question.title}

@@ -5,12 +5,15 @@ import { connectToDatabase } from "../mongoose";
 import { Tag } from "@/models/tag.model";
 import {
   CreateQuestionParams,
+  DeleteQuestionParams,
   GetQuestionByIdParams,
   GetQuestionsParams,
   QuestionVoteParams,
 } from "./shared.types";
 import { User } from "@/models/user.model";
 import { revalidatePath } from "next/cache";
+import { Answer } from "@/models/answer.model";
+import { Interaction } from "@/models/interaction.model";
 
 export async function createQuestion(params: CreateQuestionParams) {
   try {
@@ -128,5 +131,23 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
     revalidatePath(path);
   } catch (error: any) {
     console.log("ERROR FROM DOWNVOTE QUESTION ", error);
+  }
+}
+
+export async function deleteQuestion(params: DeleteQuestionParams) {
+  try {
+    connectToDatabase();
+
+    const { questionId, path } = params;
+    await Question.deleteOne({ _id: questionId });
+    await Answer.deleteMany({ question: questionId });
+    await Interaction.deleteMany({ question: questionId });
+    await Tag.updateMany(
+      { questions: questionId },
+      { $pull: { questions: questionId } }
+    );
+    revalidatePath(path);
+  } catch (error: any) {
+    console.log("ERROR FROM DELETE QUESTION ", error);
   }
 }

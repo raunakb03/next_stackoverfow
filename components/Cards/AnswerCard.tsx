@@ -3,6 +3,8 @@ import React from "react";
 import RenderTag from "../RenderTag";
 import Metric from "../Metric";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
+import { SignedIn } from "@clerk/nextjs";
+import EditDeleteAction from "../EditDeleteAction";
 
 interface AnswerCardProps {
   clerkId?: string | null;
@@ -21,6 +23,7 @@ const AnswerCard = ({
   clerkId,
   author,
 }: AnswerCardProps) => {
+  const showActionButtons = clerkId && clerkId == author.clerkId;
   return (
     <Link
       href={`/question/${question._id}#${_id}`}
@@ -35,6 +38,11 @@ const AnswerCard = ({
             {question.title}
           </h3>
         </div>
+        <SignedIn>
+          {showActionButtons && (
+            <EditDeleteAction type="answer" itemId={JSON.stringify(_id)} />
+          )}
+        </SignedIn>
       </div>
       <div className="flex-between mt-6 w-full flex-wrap gap-3">
         <Metric
