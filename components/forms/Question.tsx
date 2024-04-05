@@ -35,14 +35,17 @@ const Question = ({ type, questionDetails, mongoUserId }: QuestionProps) => {
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const parsedQUestionDetails = JSON.parse(questionDetails || {});
-  const gropuedTags = parsedQUestionDetails.tags.map((tag: any) => tag.name);
+  const parsedQUestionDetails = questionDetails
+    ? JSON.parse(questionDetails)
+    : {};
+    console.log(parsedQUestionDetails);
+  const gropuedTags = parsedQUestionDetails?.tags?.map((tag: any) => tag.name);
 
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
     defaultValues: {
-      title: parsedQUestionDetails.title || "",
-      explanation: parsedQUestionDetails.content || "",
+      title: parsedQUestionDetails?.title || "",
+      explanation: parsedQUestionDetails?.content || "",
       tags: gropuedTags || [],
     },
   });
@@ -151,7 +154,7 @@ const Question = ({ type, questionDetails, mongoUserId }: QuestionProps) => {
                   onInit={(evt, editor) => (editorRef.current = editor)}
                   onBlur={field.onBlur}
                   onEditorChange={(content) => field.onChange(content)}
-                  initialValue={parsedQUestionDetails.content || ""}
+                  initialValue={parsedQUestionDetails?.content || ""}
                   init={{
                     height: 350,
                     menubar: false,

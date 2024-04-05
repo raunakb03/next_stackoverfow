@@ -2,39 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import RenderTag from "./RenderTag";
+import { getHotQuestiions } from "@/lib/actions/question.action";
+import { getTopPopularTags } from "@/lib/actions/tag.action";
 
-const hotQuestions = [
-  {
-    _id: 1,
-    title: "How to use React Router with the latest version of react?",
-  },
-  {
-    _id: 2,
-    title: "How to use React Router with the latest version of react?",
-  },
-  {
-    _id: 3,
-    title: "How to use React Router with the latest version of react?",
-  },
-  {
-    _id: 4,
-    title: "How to use React Router with the latest version of react?",
-  },
-  {
-    _id: 5,
-    title: "How to use React Router with the latest version of react?",
-  },
-];
+const RightSidebar = async () => {
+  const hotQuestions = (await getHotQuestiions()) || [];
+  const popularTags = (await getTopPopularTags()) || [];
 
-const popularTags = [
-  { _id: 1, name: "javscript", totalQuestions: 5 },
-  { _id: 2, name: "javscript", totalQuestions: 5 },
-  { _id: 3, name: "javscript", totalQuestions: 5 },
-  { _id: 4, name: "javscript", totalQuestions: 5 },
-  { _id: 5, name: "javscript", totalQuestions: 5 },
-];
-
-const RightSidebar = () => {
   return (
     <section className="background-light900_dark200 light-border sticky right-0 top-0 flex h-screen flex-col overflow-y-auto border-l p-6 pt-36 shadow-light-300 dark:shadow-none max-xl:hidden w-[350px]">
       <div>
@@ -42,7 +16,7 @@ const RightSidebar = () => {
         <div className="mt-7 flex w-full flex-col gap-[25px]">
           {hotQuestions.map((question) => (
             <Link
-              href={`/questions/${question._id}`}
+              href={`/question/${question._id}`}
               key={question._id}
               className="flex cursor-pointer items-center justify-between gap-7"
             >
@@ -68,7 +42,7 @@ const RightSidebar = () => {
               key={tag._id}
               _id={tag._id}
               name={tag.name}
-              totalQuestions={tag.totalQuestions}
+              totalQuestions={tag.numberOfQuestions}
               showCount
             />
           ))}

@@ -159,14 +159,27 @@ export async function editQuestion(params: EditQuestionParams) {
     const { questionId, title, content, path } = params;
 
     const question = await Question.findById(questionId).populate("tags");
-    if(!question){
+    if (!question) {
       throw new Error("Question not found");
     }
 
-    question.title= title;
-    question.content= content;
+    question.title = title;
+    question.content = content;
     await question.save();
   } catch (error: any) {
     console.log("ERROR FROM EDIT QUESTION ", error);
+  }
+}
+
+export async function getHotQuestiions() {
+  try {
+    connectToDatabase();
+    const hotQuestions = await Question.find({})
+      .sort({ views: -1, upvotes: -1 })
+      .limit(5);
+
+    return hotQuestions;
+  } catch (error: any) {
+    console.log("ERROR FROM GET HOT QUESTIONS ", error);
   }
 }
