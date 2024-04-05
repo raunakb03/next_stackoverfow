@@ -25,7 +25,7 @@ export interface ParamsProps {
 }
 
 export interface SearchParamsProps {
-  sarchParams: { [key: string]: string | undefined };
+  searchParams: { [key: string]: string | undefined };
 }
 
 export interface URLProps {
