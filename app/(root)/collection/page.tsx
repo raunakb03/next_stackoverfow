@@ -4,15 +4,17 @@ import NoResult from "@/components/NoResult";
 import LocalSearch from "@/components/search/LocalSearch";
 import { QuestionFilters } from "@/constants/filters";
 import { getSavedQuestions } from "@/lib/actions/user.action";
+import { SearchParamsProps } from "@/types";
 import { auth } from "@clerk/nextjs";
 import React from "react";
 
-const Home = async () => {
+const Home = async ({ searchParams }: SearchParamsProps) => {
   const { userId } = auth();
   if (!userId) return null;
 
   const result = (await getSavedQuestions({
     clerkId: userId,
+    searchQuery: searchParams.q,
   })) || { questions: [] };
 
   return (
