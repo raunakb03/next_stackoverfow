@@ -16,6 +16,7 @@ import { revalidatePath } from "next/cache";
 import { Question } from "@/models/question.model";
 import { Tag } from "@/models/tag.model";
 import { Answer } from "@/models/answer.model";
+import { Beaker } from "lucide-react";
 
 export async function getUserById(params: any) {
   try {
@@ -89,7 +90,7 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectToDatabase();
 
-    const { searchQuery } = params;
+    const { searchQuery, filter } = params;
 
     const query: FilterQuery<typeof User> = {};
     if (searchQuery) {
@@ -99,7 +100,21 @@ export async function getAllUsers(params: GetAllUsersParams) {
       ];
     }
 
-    const users = await User.find(query).sort({ createdAt: -1 });
+    let sortOptions = {};
+
+    switch(filter){
+      case "new_users":
+        sortOptions = { createdAt : -1 };
+        break;
+      case "old_users":
+        sortOptions = { createdAt : 1 };
+        break;
+      case 'top_contributors':
+        sortOptions = { reputation: -1 };
+        break;
+    }
+
+    const users = await User.find(query).sort(sortOptions);
 
     return { users };
   } catch (error: any) {
