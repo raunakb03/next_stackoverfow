@@ -32,7 +32,7 @@ export const getJoinedDate = (date: Date) => {
 interface UrlQueryProps {
   param: string;
   key: string;
-  value: string;
+  value: string | null;
 }
 export const formUrlQuery = ({ param, key, value }: UrlQueryProps) => {
   const currentUrl = qs.parse(param);
