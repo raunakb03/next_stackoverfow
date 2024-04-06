@@ -65,24 +65,38 @@ export async function getQuestions(params: GetQuestionsParams) {
 
     let sortOptions = {};
 
-    switch(filter) {
-      case "newest" :
-        sortOptions = { createdAt : -1 };
+    switch (filter) {
+      case "newest":
+        sortOptions = { createdAt: -1 };
         break;
       case "frequent":
-        sortOptions = { views : -1 };
-        break;
-      case "unanswered":
-        sortOptions = { $size : 0 };
+        sortOptions = { views: -1 };
         break;
       default:
         break;
     }
 
-    const questions = await Question.find(query)
-      .populate({ path: "tags", model: Tag })
-      .populate({ path: "author", model: User })
-      .sort(sortOptions);
+    let questions;
+    if (filter != "unanswered") {
+      questions = await Question.find(query)
+        .populate({ path: "tags", model: Tag })
+        .populate({ path: "author", model: User })
+        .sort(sortOptions);
+    } else {
+      questions = await Question.aggregate([
+        {
+          $addFields: {
+            answersSize: { $size: "$answers" },
+          },
+        },
+        {
+          $match: { answersSize: 0 },
+        },
+        {
+          $sort: { createdAt: -1 },
+        },
+      ]);
+    }
 
     return { questions };
   } catch (error: any) {
