@@ -10,12 +10,12 @@ interface PaginationProps {
   isNext: boolean;
 }
 
-const Pagination = ({ pageNumber = 1, isNext = false }: PaginationProps) => {
+const Pagination = ({ pageNumber , isNext }: PaginationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const handleNavigation = (direction: string) => {
-    const nextPageNumber = direction == "prev" ? pageNumber-- : pageNumber++;
+    const nextPageNumber = direction == "prev" ? pageNumber-1 : pageNumber+1;
     const newUrl = formUrlQuery({
       param: searchParams.toString(),
       key: "page",

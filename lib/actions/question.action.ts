@@ -52,7 +52,9 @@ export async function getQuestions(params: GetQuestionsParams) {
   try {
     connectToDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 10 } = params;
+
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<typeof Question> = {};
 
@@ -77,28 +79,52 @@ export async function getQuestions(params: GetQuestionsParams) {
     }
 
     let questions;
+    let totalQuestions;
     if (filter != "unanswered") {
       questions = await Question.find(query)
+        .skip(skipAmount)
+        .limit(pageSize)
         .populate({ path: "tags", model: Tag })
         .populate({ path: "author", model: User })
         .sort(sortOptions);
+      totalQuestions = await Question.countDocuments(query);
     } else {
       questions = await Question.aggregate([
+        { $addFields: { answersSize: { $size: "$answers" } } },
+        { $match: { answersSize: 0 } },
+        { $sort: { createdAt: -1 } },
+        { $skip: skipAmount },
+        { $limit: pageSize },
         {
-          $addFields: {
-            answersSize: { $size: "$answers" },
+          $lookup: {
+            from: "tags", 
+            localField: "tags",
+            foreignField: "_id",
+            as: "tags",
           },
         },
         {
-          $match: { answersSize: 0 },
+          $lookup: {
+            from: "users", 
+            localField: "author",
+            foreignField: "_id",
+            as: "author",
+          },
         },
-        {
-          $sort: { createdAt: -1 },
-        },
+        { $unwind: "$author" },
       ]);
+
+      let tquestions = await Question.aggregate([
+        { $addFields: { answersSize: { $size: "$answers" } } },
+        { $match: { answersSize: 0 } },
+        { $sort: { createdAt: -1 } },
+      ]);
+      totalQuestions = tquestions.length;
     }
 
-    return { questions };
+    const isNext = totalQuestions > skipAmount + questions.length;
+
+    return { questions, isNext };
   } catch (error: any) {
     console.log("ERROR FROM GET QUESTIONS ", error);
   }
