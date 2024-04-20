@@ -16,7 +16,7 @@ import { revalidatePath } from "next/cache";
 import { Question } from "@/models/question.model";
 import { Tag } from "@/models/tag.model";
 import { Answer } from "@/models/answer.model";
-import { Beaker } from "lucide-react";
+import { Beaker, SkipBack } from "lucide-react";
 
 export async function getUserById(params: any) {
   try {
@@ -90,7 +90,8 @@ export async function getAllUsers(params: GetAllUsersParams) {
   try {
     connectToDatabase();
 
-    const { searchQuery, filter } = params;
+    const { searchQuery, filter, page = 1, pageSize = 10 } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<typeof User> = {};
     if (searchQuery) {
@@ -114,9 +115,17 @@ export async function getAllUsers(params: GetAllUsersParams) {
         break;
     }
 
-    const users = await User.find(query).sort(sortOptions);
+    const users = await User.find(query)
+      .sort(sortOptions)
+      .skip(skipAmount)
+      .limit(pageSize);
 
-    return { users };
+    const totalUsers= await User.countDocuments(query);
+
+    const isNext= totalUsers > skipAmount + users.length;
+
+    return { users, isNext};
+
   } catch (error: any) {
     console.log("ERROR FROM GET ALL USERS ", error);
   }
@@ -177,10 +186,10 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
         sortOptions = { upvotes: -1 };
         break;
       case "most_viewed":
-        sortOptions = { views: -1 }
+        sortOptions = { views: -1 };
         break;
       case "most_answered":
-        sortOptions = { answers: -1 }
+        sortOptions = { answers: -1 };
         break;
       default:
         break;
