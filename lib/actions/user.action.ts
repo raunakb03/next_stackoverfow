@@ -201,7 +201,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       options: {
         sort: sortOptions,
         skip: skipAmount,
-        limit: pageSize+1,
+        limit: pageSize + 1,
       },
       populate: [
         { path: "tags", model: Tag, select: "_id name" },
@@ -209,7 +209,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       ],
     });
 
-    const isNext= user.saved.length > pageSize;
+    const isNext = user.saved.length > pageSize;
 
     if (!user) throw new Error("User not found");
 
@@ -241,15 +241,20 @@ export async function getUserQuestions(params: GetUserStatsParams) {
   try {
     connectToDatabase();
     const { userId, page = 1, pageSize = 10 } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const totalQuestions = await Question.countDocuments({ author: userId });
 
     const userQuestions = await Question.find({ author: userId })
       .sort({ views: -1, upvotes: -1 })
+      .skip(skipAmount)
+      .limit(pageSize)
       .populate("tags", "_id name")
       .populate("author", "_id name picture clerkId");
 
-    return { totalQuestions, questions: userQuestions };
+    const isNext = totalQuestions > skipAmount + userQuestions.length;
+
+    return { totalQuestions, questions: userQuestions, isNext };
   } catch (error: any) {
     console.log("ERROR FROM GET USER QUESTIONS STATS ", error);
   }
@@ -259,15 +264,20 @@ export async function getUserAnswers(params: GetUserStatsParams) {
   try {
     connectToDatabase();
     const { userId, page = 1, pageSize = 10 } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const totalAnswers = await Answer.countDocuments({ author: userId });
 
     const userAnswers = await Answer.find({ author: userId })
       .sort({ views: -1, upvotes: -1 })
+      .skip(skipAmount)
+      .limit(pageSize)
       .populate("question", "_id title")
       .populate("author", "_id name picture clerkId");
 
-    return { totalAnswers, answers: userAnswers };
+    const isNext = totalAnswers > skipAmount + userAnswers.length;
+
+    return { totalAnswers, answers: userAnswers, isNext };
   } catch (error: any) {
     console.log("ERROR FROM GET USER ANSWERS STATS ", error);
   }
