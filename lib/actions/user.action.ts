@@ -120,12 +120,11 @@ export async function getAllUsers(params: GetAllUsersParams) {
       .skip(skipAmount)
       .limit(pageSize);
 
-    const totalUsers= await User.countDocuments(query);
+    const totalUsers = await User.countDocuments(query);
 
-    const isNext= totalUsers > skipAmount + users.length;
+    const isNext = totalUsers > skipAmount + users.length;
 
-    return { users, isNext};
-
+    return { users, isNext };
   } catch (error: any) {
     console.log("ERROR FROM GET ALL USERS ", error);
   }
@@ -168,6 +167,7 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
     connectToDatabase();
 
     const { clerkId, page = 1, pageSize = 10, filter, searchQuery } = params;
+    const skipAmount = (page - 1) * pageSize;
 
     const query: FilterQuery<typeof Question> = searchQuery
       ? { title: { $regex: searchQuery, $options: "i" } }
@@ -200,6 +200,8 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       match: query,
       options: {
         sort: sortOptions,
+        skip: skipAmount,
+        limit: pageSize+1,
       },
       populate: [
         { path: "tags", model: Tag, select: "_id name" },
@@ -207,10 +209,12 @@ export async function getSavedQuestions(params: GetSavedQuestionsParams) {
       ],
     });
 
+    const isNext= user.saved.length > pageSize;
+
     if (!user) throw new Error("User not found");
 
     const savedQuestions = user.saved;
-    return { questions: savedQuestions };
+    return { questions: savedQuestions, isNext };
   } catch (error: any) {
     console.log("ERROR FROM GET SAVED QUESTIONS ", error);
   }
