@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import GlobalFilters from "./search/GlobalFilters";
+import { globalSearch } from "@/lib/actions/general.action";
 
 const GlobalResult = () => {
   const searchParams = useSearchParams();
@@ -20,6 +21,11 @@ const GlobalResult = () => {
       setResult([]);
       setIsLoading(true);
       try {
+        const res = await globalSearch({
+          query: global,
+          type,
+        });
+        if (res) setResult(JSON.parse(res));
       } catch (error) {
         throw error;
         console.log(error);
@@ -27,10 +33,23 @@ const GlobalResult = () => {
         setIsLoading(false);
       }
     };
+
+    if (global) fetchResult();
   }, [global, type]);
 
   const renderLink = (type: string, id: string) => {
-    return "";
+    switch (type) {
+      case "question":
+        return `/question/${id}`;
+      case "answer":
+        return `/question/${id}`;
+      case "user":
+        return `/profile/${id}`;
+      case "tag":
+        return `/tags/${id}`;
+      default:
+        return "/";
+    }
   };
   return (
     <div className="absolute rounded-xl top-full z-10 mt-3 w-full bg-light-800 py-5 shadow-sm dark:bg-dark-400">
@@ -50,9 +69,9 @@ const GlobalResult = () => {
             {result.length > 0 ? (
               result.map((item: any, index: any) => (
                 <Link
-                  href={renderLink("type", "id")}
+                  href={renderLink(item.type, item.id)}
                   key={item.type + item.id + index}
-                  className="flex w-full cursor-pointer items-start gap-3 px-5 py-2.5 hover:bg-light-700/50 dark:bg-dark-500/50"
+                  className="flex w-full cursor-pointer items-start gap-3 px-5 py-2.5 hover:bg-light-700/50 hover:dark:bg-dark-500/50"
                 >
                   <Image
                     src={"/assets/icons/tag.svg"}
