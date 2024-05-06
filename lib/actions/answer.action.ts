@@ -11,6 +11,7 @@ import {
 import { Question } from "@/models/question.model";
 import { revalidatePath } from "next/cache";
 import { Interaction } from "@/models/interaction.model";
+import { User } from "@/models/user.model";
 
 export async function createAnswer(params: CreateAnswerParams) {
   try {
@@ -23,9 +24,19 @@ export async function createAnswer(params: CreateAnswerParams) {
       question,
     });
 
-    await Question.findByIdAndUpdate(question, {
+    const questionObject = await Question.findByIdAndUpdate(question, {
       $push: { answers: newAnswer._id },
     });
+
+    await Interaction.create({
+      user: author,
+      action: "answer",
+      question,
+      answer: newAnswer._id,
+      tags: questionObject.tags,
+    });
+
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 10 } });
 
     revalidatePath(path);
   } catch (error: any) {
@@ -82,10 +93,16 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
       updateQuery = { $addToSet: { upvotes: userId } };
     }
 
-    console.log(updateQuery);
-
     const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, {
       new: true,
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
     });
 
     revalidatePath(path);
@@ -113,6 +130,14 @@ export async function downvoteAnswer(params: AnswerVoteParams) {
 
     const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, {
       new: true,
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasdownVoted ? -2 : 2 },
+    });
+
+    await User.findByIdAndUpdate(answer.author, {
+      $inc: { reputation: hasdownVoted ? -10 : 10 },
     });
 
     revalidatePath(path);
