@@ -72,8 +72,10 @@ const Page = async ({ params, searchParams }: any) => {
         </div>
       </div>
       <Stats
+        reputation={userInfo?.reputation || 0}
         totalQuestions={userInfo?.totalQuestions || 0}
         totalAnswers={userInfo?.totalAnswers || 0}
+        badges={userInfo?.badgeCounts as any}
       />
       <div className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-1">
