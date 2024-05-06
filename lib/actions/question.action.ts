@@ -41,6 +41,15 @@ export async function createQuestion(params: CreateQuestionParams) {
       $push: { tags: { $each: tagDocuments } },
     });
 
+    await Interaction.create({
+      user: author,
+      action: "ask_question",
+      question: question._id,
+      tags: tagDocuments.map((tag) => tag._id),
+    });
+
+    await User.findByIdAndUpdate(author, { $inc: { reputation: 5 } });
+
     revalidatePath(path);
     return;
   } catch (error) {
@@ -52,7 +61,7 @@ export async function getQuestions(params: GetQuestionsParams) {
   try {
     connectToDatabase();
 
-    const { searchQuery, filter, page = 1, pageSize = 10 } = params;
+    const { searchQuery, filter = "newest", page = 1, pageSize = 10 } = params;
 
     const skipAmount = (page - 1) * pageSize;
 
@@ -97,7 +106,7 @@ export async function getQuestions(params: GetQuestionsParams) {
         { $limit: pageSize },
         {
           $lookup: {
-            from: "tags", 
+            from: "tags",
             localField: "tags",
             foreignField: "_id",
             as: "tags",
@@ -105,7 +114,7 @@ export async function getQuestions(params: GetQuestionsParams) {
         },
         {
           $lookup: {
-            from: "users", 
+            from: "users",
             localField: "author",
             foreignField: "_id",
             as: "author",
@@ -168,6 +177,14 @@ export async function upvoteQuestion(params: QuestionVoteParams) {
 
     const question = await Question.findByIdAndUpdate(questionId, updateQuery, {
       new: true,
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { reputation: hasupVoted ? -1 : 1 },
+    });
+
+    await User.findByIdAndUpdate(question.author, {
+      $inc: { reputation: hasupVoted ? -10 : 10 },
     });
 
     revalidatePath(path);
